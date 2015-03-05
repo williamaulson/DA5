@@ -1,0 +1,276 @@
+window.onload = function() {
+    // You might want to start with a template that uses GameStates:
+    //     https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic
+    
+    // You can copy-and-paste the code from any of the examples at http://examples.phaser.io here.
+    // You will need to change the fourth parameter to "new Phaser.Game()" from
+    // 'phaser-example' to 'game', which is the id of the HTML element where we
+    // want the game to go.
+    // The assets (and code) can be found at: https://github.com/photonstorm/phaser/tree/master/examples/assets
+    // You will need to change the paths you pass to "game.load.image()" or any other
+    // loading functions to reflect where you are putting the assets.
+    // All loading functions will typically all be found inside "preload()".
+    
+    "use strict";
+    
+    var game = new Phaser.Game( 1024, 576, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    
+    function preload() {
+        // Load an image and call it 'logo'.
+        game.load.image( 'avatar', 'assets/avatar.png' );
+        game.load.image( 'back', 'assets/back.png' );
+        game.load.image( 'circle', 'assets/circle.png' );
+        game.load.image( 'square', 'assets/square.png' );
+        game.load.image( 'rectangle', 'assets/rectangle.png' );
+        game.load.image( 'info', 'assets/info.png' );
+        game.load.image( 'endback', 'assets/endback.png' );
+        game.load.audio('beat', 'assets/beat.mp3');
+    }
+    
+    var avatar;
+    var mouseClick;
+    var firstRun = true;
+    var startTime = 0;
+    var exitKey;
+    var object1Group;
+    var object2Group;
+    var object3Group;
+    var object4Group;
+    var object5Group;
+    var object6Group;
+    var square;
+    var rectangle;
+    var circle;
+    var spawnAmount = 3;
+    var info;
+    var textTimeStyle = { font: "30px Arial", fill: "#000000", align: "center" };
+    var timeText;
+    var gameRunning = true;
+    var endText;
+    var endBack;
+    var safeStart = true;
+    var immuneText;
+    var beat;
+    
+    function create()
+    {
+    	    game.physics.startSystem(Phaser.Physics.ARCADE);
+    	    game.world.setBounds(0, 0, 4096, 1152);
+    	    game.add.sprite(0, 0, 'back');
+    	    
+    	    object1Group = game.add.group();
+    	    game.physics.arcade.enable(object1Group);
+    	    object2Group = game.add.group();
+    	    game.physics.arcade.enable(object2Group);
+    	    object3Group = game.add.group();
+    	    game.physics.arcade.enable(object3Group);
+    	    object4Group = game.add.group();
+    	    game.physics.arcade.enable(object4Group);
+    	    object5Group = game.add.group();
+    	    game.physics.arcade.enable(object5Group);
+    	    object6Group = game.add.group();
+    	    game.physics.arcade.enable(object6Group);
+    	    
+    	    
+        // Create a sprite at the center of the screen using the 'logo' image.
+        avatar = game.add.sprite(game.world.centerX, game.world.centerY, 'avatar');
+        // Anchor the sprite at its center, as opposed to its top-left corner.
+        // so it will be truly centered.
+        avatar.anchor.setTo( 0.5, 0.5 );
+        
+        // Turn on the arcade physics engine for this sprite.
+        game.physics.enable(avatar, Phaser.Physics.ARCADE);
+        game.camera.follow(avatar);
+        // Make it bounce off of the world bounds.
+        avatar.body.collideWorldBounds = true;
+        var loop;
+        for (loop = 0; loop < spawnAmount; loop = loop + 1)
+        {
+        	square = object1Group.create(game.rnd.integerInRange(50, 4046), game.rnd.integerInRange(50, 1102), 'square');
+        	square.anchor.setTo(0.5, 0.5);
+        	square.angle = game.rnd.integerInRange(0, 359);
+        	game.physics.arcade.enable(square);
+        	game.add.tween(square).to( { angle: 720 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, false);
+        	game.add.tween(square.scale).to( { x: .1, y: .1 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, true);
+
+        }
+        for (loop = 0; loop < spawnAmount; loop = loop + 1)
+        {
+        	square = object2Group.create(game.rnd.integerInRange(50, 4046), game.rnd.integerInRange(50, 1102), 'square');
+        	square.anchor.setTo(0.5, 0.5);
+        	square.angle = game.rnd.integerInRange(0, 359);
+        	game.physics.arcade.enable(square);
+        	game.add.tween(square).to( { angle: 720 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, false);
+        	game.add.tween(square.scale).to( { x: .1, y: .1 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, true);
+        }
+        for (loop = 0; loop < spawnAmount; loop = loop + 1)
+        {
+        	rectangle = object3Group.create(game.rnd.integerInRange(50, 4046), game.rnd.integerInRange(50, 1102), 'rectangle');
+        	rectangle.anchor.setTo(0.5, 0.5);
+        	rectangle.angle = game.rnd.integerInRange(0, 359);
+        	game.physics.arcade.enable(rectangle);
+        	game.add.tween(rectangle).to( { angle: 720 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, false);
+        	game.add.tween(rectangle.scale).to( { x: .1, y: .1 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, true);
+        }
+        for (loop = 0; loop < spawnAmount; loop = loop + 1)
+        {
+        	rectangle = object4Group.create(game.rnd.integerInRange(50, 4046), game.rnd.integerInRange(50, 1102), 'rectangle');
+        	rectangle.anchor.setTo(0.5, 0.5);
+        	rectangle.angle = game.rnd.integerInRange(0, 359);
+        	game.physics.arcade.enable(rectangle);
+        	game.add.tween(rectangle).to( { angle: 720 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, false);
+        	game.add.tween(rectangle.scale).to( { x: .1, y: .1 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, true);
+        }
+        for (loop = 0; loop < spawnAmount; loop = loop + 1)
+        {
+        	circle = object5Group.create(game.rnd.integerInRange(50, 4046), game.rnd.integerInRange(50, 1102), 'circle');
+        	circle.anchor.setTo(0.5, 0.5);
+        	circle.angle = game.rnd.integerInRange(0, 359);
+        	game.physics.arcade.enable(circle);
+        	game.add.tween(circle).to( { angle: 720 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, false);
+        	game.add.tween(circle.scale).to( { x: .1, y: .1 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, true);
+        }
+        for (loop = 0; loop < spawnAmount; loop = loop + 1)
+        {
+        	circle = object6Group.create(game.rnd.integerInRange(50, 4046), game.rnd.integerInRange(50, 1102), 'circle');
+        	circle.anchor.setTo(0.5, 0.5);
+        	circle.angle = game.rnd.integerInRange(0, 359);
+        	game.physics.arcade.enable(circle);
+        	game.add.tween(circle).to( { angle: 720 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, false);
+        	game.add.tween(circle.scale).to( { x: .1, y: .1 }, game.rnd.integerInRange(1500, 5000), Phaser.Easing.Linear.None, true, 0, -1, true);
+        }
+        info = game.add.sprite(game.rnd.integerInRange(3700, 4000), game.rnd.integerInRange(100, 400), 'info');
+        game.physics.arcade.enable(info);
+        game.add.tween(info).to( { angle: 720 }, 5000, Phaser.Easing.Linear.None, true, 0, -1, false);
+        game.add.tween(info).to( { x: (info.x - game.rnd.integerInRange(200, 500)), y: (info.y + game.rnd.integerInRange(200, 500)) }, 5000, Phaser.Easing.Linear.None, true, 0, -1, true);
+        timeText = game.add.text(15, 15, 'Time Left: ' + Math.floor(((60999 - (game.time.now - startTime)) / 1000) % 60), textTimeStyle);
+        timeText.cameraOffset.x = 15;
+        timeText.cameraOffset.y = 15;
+        timeText.fixedToCamera = true;
+    	    
+    	    beat = game.add.audio('beat');
+    	    beat.play('',0,0.1,true);
+    	    
+      game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+    	    game.input.onDown.add(fullScreenStart, this);
+    	    game.paused = true;
+    	    
+    	    exitKey = game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+    }
+    
+    function fullScreenStart() //fullscreen and pause mode
+    {
+    	    if (firstRun) //prevent game from starting on first load
+    	    {
+    	    	    startTime = game.time.now;
+    	    	    firstRun = false;
+    	    	    immuneText = game.add.text(500, 15, 'Immune', textTimeStyle);
+    	    	    immuneText.cameraOffset.x = 500;
+    	    	    immuneText.cameraOffset.y = 15;
+    	    	    immuneText.fixedToCamera = true;
+    	    	    game.time.events.add(Phaser.Timer.SECOND * 3, killSafeStart, null);
+    	    }
+    	    game.scale.startFullScreen(true);
+    	    game.paused = false;
+    	    
+    	   /* if (game.scale.isFullScreen)
+    	    {
+    	    	    game.paused = true;
+    	    	    game.scale.stopFullScreen();
+    	    }
+    	    else
+    	    {
+    	    	    if (firstRun) //prevent game from starting on first load
+    	    	    {
+    	    	    	    //startTime = game.time.now;
+    	    	    	    firstRun = false;
+    	    	    }
+    	    	    
+    	    	    game.scale.startFullScreen(true);
+    	    	    game.paused = false;
+    	    }*/
+    }
+    
+    function update()
+    {
+    	    if (gameRunning)
+    	    {
+    	    	     timeText.setText('Time Left: ' + Math.floor(((60999 - (game.time.now - startTime)) / 1000) % 60));
+    	    	     
+    	    	     if ((Math.floor(((60999 - (game.time.now - startTime)) / 1000) % 60) <= 0) && safeStart === false)
+    	    	     {
+    	    	     	     killGame();
+    	    	     }
+    	    	     
+    	    	     if (safeStart === false)
+    	    	     {
+    	    	     	     game.physics.arcade.overlap(avatar, object1Group, killGame, null, this);
+    	    	     	     game.physics.arcade.overlap(avatar, object2Group, killGame, null, this);
+    	    	     	     game.physics.arcade.overlap(avatar, object3Group, killGame, null, this);
+    	    	     	     game.physics.arcade.overlap(avatar, object4Group, killGame, null, this);
+    	    	     	     game.physics.arcade.overlap(avatar, object5Group, killGame, null, this);
+    	    	     	     game.physics.arcade.overlap(avatar, object6Group, killGame, null, this);
+    	    	     }
+    	    	     
+    	    	     game.physics.arcade.overlap(avatar, info, winGame, null, this);
+    	    
+    	    	     if (exitKey.isDown)
+    	    	     {
+    	    	     	     game.paused = true;
+    	    	     	     game.scale.stopFullScreen(); 
+    	    	     }
+    	    
+    	    	     object1Group.x = object1Group.x + game.rnd.integerInRange(-1, 1);
+    	    	     object1Group.y = object1Group.y + game.rnd.integerInRange(-1, 1);
+    	    	     object2Group.x = object2Group.x + game.rnd.integerInRange(-2, 2);
+    	    	     object2Group.y = object2Group.y + game.rnd.integerInRange(-2, 2);
+    	    	     object3Group.x = object3Group.x + game.rnd.integerInRange(-1, 1);
+    	    	     object3Group.y = object3Group.y + game.rnd.integerInRange(-1, 1);
+    	    	     object4Group.x = object4Group.x + game.rnd.integerInRange(-2, 2);
+    	    	     object4Group.y = object4Group.y + game.rnd.integerInRange(-2, 2);
+    	    	     object5Group.x = object5Group.x + game.rnd.integerInRange(-1, 1);
+    	    	     object5Group.y = object5Group.y + game.rnd.integerInRange(-1, 1);
+    	    	     object6Group.x = object6Group.x + game.rnd.integerInRange(-2, 2);
+    	    	     object6Group.y = object6Group.y + game.rnd.integerInRange(-2, 2);
+    	    
+    	    
+    	    	     if (game.input.activePointer.isDown)
+    	    	     {
+    	    	     	     avatar.rotation = game.physics.arcade.accelerateToPointer(avatar, this.game.input.activePointer, 200, 250, 250 );
+    	    	     }
+    	    }
+    	   
+        // Accelerate the 'logo' sprite towards the cursor,
+        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
+        // in X or Y.
+        // This function returns the rotation angle that makes it visually match its
+        // new trajectory.
+        //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
+    }
+    
+    function killGame()
+    {
+    	    gameRunning = false;
+    	    endBack = game.add.sprite(0, 0, 'endback');
+    	    endText = game.add.text(450, 300, 'You died!', textTimeStyle);
+    	    endText.cameraOffset.x = 450;
+    	    endText.cameraOffset.y = 300;
+    	    endText.fixedToCamera = true;
+    }
+    
+    function winGame()
+    {
+    	    gameRunning = false;
+    	    endBack = game.add.sprite(0, 0, 'endback');
+    	    endText = game.add.text(450, 300, 'You survived!', textTimeStyle);
+    	    endText.cameraOffset.x = 450;
+    	    endText.cameraOffset.y = 300;
+    	    endText.fixedToCamera = true;
+    }
+    
+    function killSafeStart()
+    {
+    	    immuneText.destroy();
+    	    safeStart = false;
+    }
+};
